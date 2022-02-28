@@ -87,6 +87,7 @@ POSSIBILITY OF SUCH DAMAGE.
 @type ACTION_GETPTRS: C{int}
 """
 
+
 from __future__ import unicode_literals
 
 from xml.dom.minidom import *
@@ -114,8 +115,7 @@ LISTARRAYS = ['bhkConstraint::entities',
 #
 # global data
 #
-native_types = {}
-native_types['TEMPLATE'] = 'T'
+native_types = {'TEMPLATE': 'T'}
 basic_types = {}
 enum_types = {}
 flag_types = {}
@@ -214,19 +214,16 @@ class CSFile(io.TextIOWrapper):
         # txt
         # this will also break the backslash, which is kind of handy
         # call code("\n") if you want a backslashed newline in backslash mode
-        if txt == None:
+        if txt is None:
             self.write('\n')
             return
-    
+
         # block end
         if txt[:1] == '}': self.indent -= 1
         # special, private:, public:, and protected:
         if txt[-1:] == ':': self.indent -= 1
         # endline string
-        if self.backslash_mode:
-            endl = ' \\\n'
-        else:
-            endl = '\n'
+        endl = ' \\\n' if self.backslash_mode else '\n'
         # indent string
         prefix = '\t' * self.indent
         # strip trailing whitespace, including newlines
@@ -237,7 +234,7 @@ class CSFile(io.TextIOWrapper):
         if txt[-1:] == '{': self.indent += 1
         # special, private:, public:, and protected:
         if txt[-1:] == ':': self.indent += 1
-        
+
         self.write(result.encode('utf-8').decode('utf-8', 'strict'))
     
     
@@ -262,11 +259,11 @@ class CSFile(io.TextIOWrapper):
                 txt = txt.replace('\n', '\n * ')
                 self.code('/*!\n * ' + txt + '\n */')
             else:
-                self.code('/*! ' + txt + ' */')
+                self.code(f'/*! {txt} */')
         else:
             lines = txt.split('\n')
             for l in lines:
-                self.code('// ' + l)
+                self.code(f'// {l}')
     
     def declare(self, block):
         """
