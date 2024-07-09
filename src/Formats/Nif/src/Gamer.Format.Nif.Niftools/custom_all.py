@@ -39,37 +39,33 @@ CUSTOMTYPES = [
 # Function to extract custom code from existing file
 #
 def ExtractCustomCode(file_name):
-    custom_lines = {}
-    for type in CUSTOMTYPES:
-        custom_lines[type] = []
-    
+    custom_lines = {type: [] for type in CUSTOMTYPES}
     if os.path.isfile(file_name) == False:
         #for type in CUSTOMTYPES:
         #    custom_lines[type].append("\n")
         return custom_lines
-    
+
     f = io.open(file_name, 'rt', 1, 'utf-8')
     lines = f.readlines()
     f.close()
-   
+
     custom_flag = False
     custom_name = ""
-    
+
     for l in lines:
-        if custom_flag == True:
+        if custom_flag:
             if l.find('//--END:CUSTOM--//') != -1:
                 custom_flag = False
+            elif not custom_lines[custom_name]:
+                custom_lines[custom_name] = [l]
             else:
-                if not custom_lines[custom_name]:
-                    custom_lines[custom_name] = [l]
-                else:
-                    custom_lines[custom_name].append(l)
+                custom_lines[custom_name].append(l)
         for type in CUSTOMTYPES:
             if l.find('//--BEGIN:%s--//'%type) != -1:
                 custom_flag = True
                 custom_name = type
                 break
-    
+
     return custom_lines
 
 #
